@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
 import tw from "twrnc";
 import { FlashList } from "@shopify/flash-list";
+
 import PhotoPreview from "@/components/PhotoPreview";
 
 const Photos = () => {
@@ -19,18 +20,16 @@ const Photos = () => {
       {isLoading ? (
         <ActivityIndicator size={45} color={"blue"} style={tw`mt-2`} />
       ) : (
-        <View style={tw`w-full h-full`}>
-          <FlashList
-            data={data}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              return <PhotoPreview photo={item} />;
-            }}
-            numColumns={4}
-            estimatedItemSize={50}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
+        <FlashList
+          data={data}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            return <PhotoPreview photo={item} />;
+          }}
+          numColumns={4}
+          estimatedItemSize={50}
+          showsVerticalScrollIndicator={false}
+        />
       )}
     </View>
   );
