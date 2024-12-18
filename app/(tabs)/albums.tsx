@@ -22,7 +22,7 @@ const Albums = () => {
       ) : (
         <FlashList
           data={data}
-          keyExtractor={(item, i) => i.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
             return <AlbumPreview album={item} />;
           }}
