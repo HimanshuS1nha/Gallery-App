@@ -1,14 +1,15 @@
-import { View, Text, Image } from "react-native";
+import { View, Image } from "react-native";
 import React from "react";
 import tw from "twrnc";
-import { useLocalSearchParams } from "expo-router";
+
+import { usePhotos } from "@/hooks/usePhotos";
 
 const Photo = () => {
-  const { photoUri } = useLocalSearchParams() as { photoUri: string };
+  const selectedPhoto = usePhotos((state) => state.selectedPhoto);
   return (
     <View style={tw`flex-1 bg-black`}>
       <Image
-        source={{ uri: photoUri }}
+        source={{ uri: selectedPhoto?.uri }}
         style={tw`w-full h-[60%] mt-[25%]`}
         resizeMode="stretch"
       />

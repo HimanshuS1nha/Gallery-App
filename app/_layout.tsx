@@ -4,9 +4,12 @@ import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 import tw from "twrnc";
 
+import { usePhotos } from "@/hooks/usePhotos";
+
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const { setSelectedPhoto } = usePhotos();
   return (
     <QueryClientProvider client={queryClient}>
       <Stack>
@@ -37,7 +40,12 @@ export default function RootLayout() {
             headerBackVisible: false,
             headerLeft: () => {
               return (
-                <Pressable onPress={router.back}>
+                <Pressable
+                  onPress={() => {
+                    setSelectedPhoto(null);
+                    router.back();
+                  }}
+                >
                   <Ionicons name="chevron-back" size={23} color="white" />
                 </Pressable>
               );
