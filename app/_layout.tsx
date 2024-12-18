@@ -60,6 +60,14 @@ export default function RootLayout() {
             },
           }}
         />
+        <Stack.Screen
+          name="(others)/album-photos"
+          options={{
+            statusBarBackgroundColor: "#fff",
+            statusBarStyle: "dark",
+            title: "",
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );
