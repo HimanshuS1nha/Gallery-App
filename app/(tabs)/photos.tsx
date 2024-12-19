@@ -1,4 +1,4 @@
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
@@ -29,6 +29,10 @@ const Photos = () => {
     <View style={tw`flex-1 bg-white`}>
       {isLoading ? (
         <ActivityIndicator size={45} color={"blue"} style={tw`mt-2`} />
+      ) : photos.length === 0 ? (
+        <Text style={tw`text-rose-600 text-center mt-4 font-medium text-base`}>
+          No images to show
+        </Text>
       ) : (
         <FlashList
           data={photos}
