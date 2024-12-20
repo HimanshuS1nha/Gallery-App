@@ -8,12 +8,18 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { useSelectedItems } from "@/hooks/useSelectedItems";
 import { usePhotos } from "@/hooks/usePhotos";
+import { useAlbums } from "@/hooks/useAlbums";
 
 const TabsLayout = () => {
   const queryClient = useQueryClient();
-  const { selectedAlbums, selectedPhotos, setSelectedPhotos } =
-    useSelectedItems();
+  const {
+    selectedAlbums,
+    setSelectedAlbums,
+    selectedPhotos,
+    setSelectedPhotos,
+  } = useSelectedItems();
   const photos = usePhotos((state) => state.photos);
+  const albums = useAlbums((state) => state.albums);
 
   const { mutate: handleDeleteSelectedPhotos, isPending } = useMutation({
     mutationKey: ["delete-selected-photos"],
@@ -109,6 +115,28 @@ const TabsLayout = () => {
             return <Ionicons name="albums" size={size} color={color} />;
           },
           title: "Albums",
+          headerRight: () => {
+            return (
+              <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
+                {selectedAlbums.length > 0 ? (
+                  <>
+                    <Pressable
+                      onPress={() => {
+                        setSelectedAlbums(albums);
+                      }}
+                    >
+                      <Feather name="check-square" size={23} color="black" />
+                    </Pressable>
+                    <Pressable>
+                      <FontAwesome5 name="trash" size={21} color="black" />
+                    </Pressable>
+                  </>
+                ) : (
+                  <Feather name="settings" size={23} />
+                )}
+              </View>
+            );
+          },
         }}
       />
     </Tabs>

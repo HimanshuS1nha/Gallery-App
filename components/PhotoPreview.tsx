@@ -43,8 +43,10 @@ const PhotoPreview = ({ photo }: { photo: Asset }) => {
         }
       }}
       onLongPress={() => {
-        const newSelectedPhotos = [...selectedPhotos, photo];
-        setSelectedPhotos(newSelectedPhotos);
+        if (!checkIfPhotoIsSelected()) {
+          const newSelectedPhotos = [...selectedPhotos, photo];
+          setSelectedPhotos(newSelectedPhotos);
+        }
       }}
     >
       <Image
