@@ -1,10 +1,13 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { View } from "react-native";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import tw from "twrnc";
 
+import { useSelectedItems } from "@/hooks/useSelectedItems";
+
 const TabsLayout = () => {
+  const { selectedAlbums, selectedPhotos } = useSelectedItems();
   return (
     <Tabs>
       <Tabs.Screen
@@ -17,7 +20,14 @@ const TabsLayout = () => {
           headerRight: () => {
             return (
               <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
-                <Feather name="settings" size={23} />
+                {selectedPhotos.length > 0 ? (
+                  <>
+                    <Feather name="check-square" size={23} color="black" />
+                    <FontAwesome5 name="trash" size={21} color="black" />
+                  </>
+                ) : (
+                  <Feather name="settings" size={23} />
+                )}
               </View>
             );
           },
