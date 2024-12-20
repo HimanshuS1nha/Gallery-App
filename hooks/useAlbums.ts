@@ -1,4 +1,4 @@
-import { Album } from "expo-media-library";
+import type { Album, Asset } from "expo-media-library";
 import { create } from "zustand";
 
 type UseAlbumsType = {
@@ -6,6 +6,8 @@ type UseAlbumsType = {
   setAlbums: (albums: Album[]) => void;
   selectedAlbum: Album | null;
   setSelectedAlbum: (selectedAlbum: Album | null) => void;
+  albumPhotos: Asset[];
+  setAlbumPhotos: (albumPhotos: Asset[]) => void;
 };
 
 export const useAlbums = create<UseAlbumsType>((set) => ({
@@ -13,4 +15,6 @@ export const useAlbums = create<UseAlbumsType>((set) => ({
   selectedAlbum: null,
   setAlbums: (albums) => set({ albums }),
   setSelectedAlbum: (selectedAlbum) => set({ selectedAlbum }),
+  albumPhotos: [],
+  setAlbumPhotos: (albumPhotos: Asset[]) => set({ albumPhotos }),
 }));

@@ -8,11 +8,9 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { usePhotos } from "@/hooks/usePhotos";
 
-const queryClient = new QueryClient();
-
 const StackNavigator = () => {
-  const { setSelectedPhoto, selectedPhoto } = usePhotos();
   const queryClient = useQueryClient();
+  const { setSelectedPhoto, selectedPhoto } = usePhotos();
 
   const { mutate: handleDeleteImage, isPending } = useMutation({
     mutationKey: [`delete-photo-${selectedPhoto?.id}`],
@@ -27,7 +25,7 @@ const StackNavigator = () => {
         true
       );
       if (!isAlbumDeleted) {
-        throw new Error("Album not deleted.");
+        throw new Error("Album not deleted");
       }
 
       return true;
@@ -35,6 +33,9 @@ const StackNavigator = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
       router.dismissAll();
+    },
+    onError: () => {
+      Alert.alert("Error", "Some error occured");
     },
   });
   return (
@@ -117,8 +118,9 @@ const StackNavigator = () => {
   );
 };
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
-  const { setSelectedPhoto } = usePhotos();
   return (
     <QueryClientProvider client={queryClient}>
       <StackNavigator />

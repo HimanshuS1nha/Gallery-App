@@ -1,4 +1,4 @@
-import { Asset } from "expo-media-library";
+import type { Asset } from "expo-media-library";
 import { create } from "zustand";
 
 type UsePhotosType = {
