@@ -14,9 +14,11 @@ const AlbumPhotos = () => {
   const { selectedAlbum, setAlbumPhotos, albumPhotos } = useAlbums();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["get-photos"],
+    queryKey: ["get-album-photos"],
     queryFn: async () => {
-      const albumAssets = await MediaLibrary.getAssetsAsync();
+      const albumAssets = await MediaLibrary.getAssetsAsync({
+        album: selectedAlbum!,
+      });
       return albumAssets.assets;
     },
   });

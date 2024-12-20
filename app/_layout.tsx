@@ -1,25 +1,70 @@
+import * as React from "react";
 import { router, Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons, Feather } from "@expo/vector-icons";
 import { Alert, Pressable, View } from "react-native";
 import tw from "twrnc";
 import * as MediaLibrary from "expo-media-library";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 import { usePhotos } from "@/hooks/usePhotos";
+import { useAlbums } from "@/hooks/useAlbums";
+import { useSelectedItems } from "@/hooks/useSelectedItems";
 
 const StackNavigator = () => {
   const queryClient = useQueryClient();
   const { setSelectedPhoto, selectedPhoto } = usePhotos();
+  const { albumPhotos } = useAlbums();
+  const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
 
-  const { mutate: handleDeleteImage, isPending } = useMutation({
-    mutationKey: [`delete-photo-${selectedPhoto?.id}`],
+  const { mutate: handleDeletePhoto, isPending: deletePhotoPending } =
+    useMutation({
+      mutationKey: [`delete-photo-${selectedPhoto?.id}`],
+      mutationFn: async () => {
+        const tempAlbum = await MediaLibrary.createAlbumAsync(
+          "tempAlbum",
+          selectedPhoto!,
+          false
+        );
+        const isAlbumDeleted = await MediaLibrary.deleteAlbumsAsync(
+          tempAlbum,
+          true
+        );
+        if (!isAlbumDeleted) {
+          throw new Error("Album not deleted");
+        }
+
+        return true;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
+        router.dismissAll();
+      },
+      onError: () => {
+        Alert.alert("Error", "Some error occured");
+      },
+    });
+
+  const {
+    mutate: handleDeleteSelectedPhotos,
+    isPending: deleteSelectedPhotosPending,
+  } = useMutation({
+    mutationKey: ["delete-selected-photos"],
     mutationFn: async () => {
       const tempAlbum = await MediaLibrary.createAlbumAsync(
-        "tempAlbum",
-        selectedPhoto!,
+        "temp",
+        selectedPhotos[0],
         false
       );
+
+      if (selectedPhotos.length > 1) {
+        await MediaLibrary.addAssetsToAlbumAsync(
+          selectedPhotos.slice(1),
+          tempAlbum,
+          false
+        );
+      }
+
       const isAlbumDeleted = await MediaLibrary.deleteAlbumsAsync(
         tempAlbum,
         true
@@ -32,7 +77,9 @@ const StackNavigator = () => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
-      router.dismissAll();
+      await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
+
+      setSelectedPhotos([]);
     },
     onError: () => {
       Alert.alert("Error", "Some error occured");
@@ -91,12 +138,12 @@ const StackNavigator = () => {
                         },
                         {
                           text: "Yes",
-                          onPress: () => handleDeleteImage(),
+                          onPress: () => handleDeletePhoto(),
                         },
                       ]
                     );
                   }}
-                  disabled={isPending}
+                  disabled={deletePhotoPending}
                 >
                   <FontAwesome5 name="trash" size={20} color="white" />
                 </Pressable>
@@ -112,6 +159,45 @@ const StackNavigator = () => {
           statusBarBackgroundColor: "#fff",
           statusBarStyle: "dark",
           title: "",
+          headerRight: () => {
+            return (
+              <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
+                {selectedPhotos.length > 0 ? (
+                  <>
+                    <Pressable
+                      onPress={() => {
+                        setSelectedPhotos(albumPhotos);
+                      }}
+                    >
+                      <Feather name="check-square" size={23} color="black" />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        Alert.alert(
+                          "Warning",
+                          "Do you want to delete these photos?",
+                          [
+                            {
+                              text: "No",
+                            },
+                            {
+                              text: "Yes",
+                              onPress: () => handleDeleteSelectedPhotos(),
+                            },
+                          ]
+                        );
+                      }}
+                      disabled={deleteSelectedPhotosPending}
+                    >
+                      <FontAwesome5 name="trash" size={21} color="black" />
+                    </Pressable>
+                  </>
+                ) : (
+                  <Feather name="settings" size={23} />
+                )}
+              </View>
+            );
+          },
         }}
       />
     </Stack>
