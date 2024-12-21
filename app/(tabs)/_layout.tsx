@@ -21,7 +21,10 @@ const TabsLayout = () => {
   const photos = usePhotos((state) => state.photos);
   const albums = useAlbums((state) => state.albums);
 
-  const { mutate: handleDeleteSelectedPhotos, isPending } = useMutation({
+  const {
+    mutate: handleDeleteSelectedPhotos,
+    isPending: deleteSelectedPhotosPending,
+  } = useMutation({
     mutationKey: ["delete-selected-photos"],
     mutationFn: async () => {
       const tempAlbum = await MediaLibrary.createAlbumAsync(
@@ -51,8 +54,55 @@ const TabsLayout = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
+      await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
       setSelectedPhotos([]);
+      setSelectedAlbums([]);
+    },
+    onError: () => {
+      Alert.alert("Error", "Some error occured");
+    },
+  });
+
+  const {
+    mutate: handleDeleteSelectedAlbums,
+    isPending: deleteSelectedAlbumsPending,
+  } = useMutation({
+    mutationKey: ["delete-selected-albums"],
+    mutationFn: async () => {
+      let selectedAlbumsAssets: MediaLibrary.Asset[] = [];
+
+      for (const selectedAlbum of selectedAlbums) {
+        const assets = await MediaLibrary.getAssetsAsync({
+          album: selectedAlbum,
+        });
+        selectedAlbumsAssets.push(...assets.assets);
+      }
+
+      const tempAlbum = await MediaLibrary.createAlbumAsync(
+        "tempAlbum",
+        selectedAlbumsAssets[0],
+        false
+      );
+      await MediaLibrary.addAssetsToAlbumAsync(
+        selectedAlbumsAssets.slice(1),
+        tempAlbum
+      );
+
+      const isAlbumDeleted = await MediaLibrary.deleteAlbumsAsync(tempAlbum);
+      if (!isAlbumDeleted) {
+        throw new Error("Album not delete");
+      }
+
+      return true;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
+      await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
+      await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
+
+      setSelectedPhotos([]);
+      setSelectedAlbums([]);
     },
     onError: () => {
       Alert.alert("Error", "Some error occured");
@@ -95,7 +145,7 @@ const TabsLayout = () => {
                           ]
                         );
                       }}
-                      disabled={isPending}
+                      disabled={deleteSelectedPhotosPending}
                     >
                       <FontAwesome5 name="trash" size={21} color="black" />
                     </Pressable>
@@ -127,7 +177,24 @@ const TabsLayout = () => {
                     >
                       <Feather name="check-square" size={23} color="black" />
                     </Pressable>
-                    <Pressable>
+                    <Pressable
+                      onPress={() => {
+                        Alert.alert(
+                          "Warning",
+                          "Do you want to delete these albums?",
+                          [
+                            {
+                              text: "No",
+                            },
+                            {
+                              text: "Yes",
+                              onPress: () => handleDeleteSelectedAlbums(),
+                            },
+                          ]
+                        );
+                      }}
+                      disabled={deleteSelectedAlbumsPending}
+                    >
                       <FontAwesome5 name="trash" size={21} color="black" />
                     </Pressable>
                   </>

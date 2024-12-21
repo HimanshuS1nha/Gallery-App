@@ -162,7 +162,7 @@ const StackNavigator = () => {
           headerRight: () => {
             return (
               <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
-                {selectedPhotos.length > 0 ? (
+                {selectedPhotos.length > 0 && (
                   <>
                     <Pressable
                       onPress={() => {
@@ -192,8 +192,6 @@ const StackNavigator = () => {
                       <FontAwesome5 name="trash" size={21} color="black" />
                     </Pressable>
                   </>
-                ) : (
-                  <Feather name="settings" size={23} />
                 )}
               </View>
             );
