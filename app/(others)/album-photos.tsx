@@ -9,9 +9,12 @@ import { FlashList } from "@shopify/flash-list";
 import PhotoPreview from "@/components/PhotoPreview";
 
 import { useAlbums } from "@/hooks/useAlbums";
+import { useSelectedItems } from "@/hooks/useSelectedItems";
+import ChooseAlbumModal from "@/components/ChooseAlbumModal";
 
 const AlbumPhotos = () => {
   const { selectedAlbum, setAlbumPhotos, albumPhotos } = useAlbums();
+  const selectedPhotos = useSelectedItems((state) => state.selectedPhotos);
 
   const { data, isLoading } = useQuery({
     queryKey: ["get-album-photos"],
@@ -30,7 +33,13 @@ const AlbumPhotos = () => {
   }, [data]);
   return (
     <View style={tw`flex-1 bg-white`}>
-      <Stack.Screen options={{ title: selectedAlbum?.title }} />
+      <Stack.Screen
+        options={{
+          title: selectedPhotos.length > 0 ? "" : selectedAlbum?.title,
+        }}
+      />
+
+      <ChooseAlbumModal />
 
       {isLoading ? (
         <ActivityIndicator size={45} color={"blue"} style={tw`mt-2`} />

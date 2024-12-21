@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React from "react";
 import { Pressable, View, Alert } from "react-native";
 import { AntDesign, Feather, Ionicons, FontAwesome5 } from "@expo/vector-icons";
@@ -113,9 +113,25 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="photos"
         options={{
-          title: "Photos",
+          title: selectedPhotos.length > 0 ? "" : "Photos",
           tabBarIcon: ({ color, size }) => {
             return <AntDesign name="picture" size={size} color={color} />;
+          },
+          headerLeft: () => {
+            return (
+              <Pressable
+                onPress={() => {
+                  if (selectedPhotos.length > 0) {
+                    setSelectedPhotos([]);
+                  }
+                }}
+                style={tw`ml-3.5`}
+              >
+                {selectedPhotos.length > 0 && (
+                  <Ionicons name="chevron-back" size={23} color="black" />
+                )}
+              </Pressable>
+            );
           },
           headerRight: () => {
             return (

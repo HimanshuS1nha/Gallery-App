@@ -1,7 +1,7 @@
 import * as React from "react";
 import { router, Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { FontAwesome5, Ionicons, Feather } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons, Feather, Octicons } from "@expo/vector-icons";
 import { Alert, Pressable, View } from "react-native";
 import tw from "twrnc";
 import * as MediaLibrary from "expo-media-library";
@@ -10,12 +10,14 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { usePhotos } from "@/hooks/usePhotos";
 import { useAlbums } from "@/hooks/useAlbums";
 import { useSelectedItems } from "@/hooks/useSelectedItems";
+import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
 
 const StackNavigator = () => {
   const queryClient = useQueryClient();
   const { setSelectedPhoto, selectedPhoto } = usePhotos();
   const { albumPhotos } = useAlbums();
   const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
+  const setIsVisible = useChooseAlbumModal((state) => state.setIsVisible);
 
   const { mutate: handleDeletePhoto, isPending: deletePhotoPending } =
     useMutation({
@@ -159,11 +161,31 @@ const StackNavigator = () => {
           statusBarBackgroundColor: "#fff",
           statusBarStyle: "dark",
           title: "",
+          headerBackVisible: false,
+          headerLeft: () => {
+            return (
+              <Pressable
+                onPress={() => {
+                  if (selectedPhotos.length > 0) {
+                    setSelectedPhotos([]);
+                  } else {
+                    router.back();
+                  }
+                }}
+                style={tw`mr-3.5`}
+              >
+                <Ionicons name="chevron-back" size={23} color="black" />
+              </Pressable>
+            );
+          },
           headerRight: () => {
             return (
               <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
                 {selectedPhotos.length > 0 && (
                   <>
+                    <Pressable onPress={() => setIsVisible(true)}>
+                      <Octicons name="arrow-switch" size={23} color="black" />
+                    </Pressable>
                     <Pressable
                       onPress={() => {
                         setSelectedPhotos(albumPhotos);
