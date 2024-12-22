@@ -1,4 +1,4 @@
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import React from "react";
 import { Pressable, View, Alert } from "react-native";
 import { AntDesign, Feather, Ionicons, FontAwesome5 } from "@expo/vector-icons";
@@ -84,10 +84,12 @@ const TabsLayout = () => {
         selectedAlbumsAssets[0],
         false
       );
-      await MediaLibrary.addAssetsToAlbumAsync(
-        selectedAlbumsAssets.slice(1),
-        tempAlbum
-      );
+      if (selectedAlbumsAssets.length > 1) {
+        await MediaLibrary.addAssetsToAlbumAsync(
+          selectedAlbumsAssets.slice(1),
+          tempAlbum
+        );
+      }
 
       const isAlbumDeleted = await MediaLibrary.deleteAlbumsAsync(tempAlbum);
       if (!isAlbumDeleted) {

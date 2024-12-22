@@ -11,6 +11,7 @@ import PhotoPreview from "@/components/PhotoPreview";
 import { useAlbums } from "@/hooks/useAlbums";
 import { useSelectedItems } from "@/hooks/useSelectedItems";
 import ChooseAlbumModal from "@/components/ChooseAlbumModal";
+import CreateAlbumModal from "@/components/CreateAlbumModal";
 
 const AlbumPhotos = () => {
   const { selectedAlbum, setAlbumPhotos, albumPhotos } = useAlbums();
@@ -40,6 +41,7 @@ const AlbumPhotos = () => {
       />
 
       <ChooseAlbumModal />
+      <CreateAlbumModal />
 
       {isLoading ? (
         <ActivityIndicator size={45} color={"blue"} style={tw`mt-2`} />

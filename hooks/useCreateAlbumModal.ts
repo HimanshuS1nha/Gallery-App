@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
-type UseChooseAlbumModalType = {
+type UseCreateAlbumModalType = {
   isVisible: boolean;
   setIsVisible: (isVisible: boolean) => void;
 };
 
-export const useChooseAlbumModal = create<UseChooseAlbumModalType>((set) => ({
+export const useCreateAlbumModal = create<UseCreateAlbumModalType>((set) => ({
   isVisible: false,
   setIsVisible: (isVisible) => set({ isVisible }),
 }));

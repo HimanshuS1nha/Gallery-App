@@ -1,14 +1,50 @@
-import { View, Text, Modal, Pressable } from "react-native";
+import { View, Text, Modal, Pressable, Alert } from "react-native";
 import React from "react";
 import tw from "twrnc";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as MediaLibrary from "expo-media-library";
 
 import { useAlbums } from "@/hooks/useAlbums";
 import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
+import { useSelectedItems } from "@/hooks/useSelectedItems";
+import { useCreateAlbumModal } from "@/hooks/useCreateAlbumModal";
 
 const ChooseAlbumModal = () => {
   const albums = useAlbums((state) => state.albums);
   const { isVisible, setIsVisible } = useChooseAlbumModal();
+  const showCreateAlbumModal = useCreateAlbumModal(
+    (state) => state.setIsVisible
+  );
+  const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
+  const queryClient = useQueryClient();
+
+  const { mutate: handleMoveSelectedImagesToAlbum, isPending } = useMutation({
+    mutationKey: ["move-selected-images-to-album"],
+    mutationFn: async (album: MediaLibrary.Album) => {
+      const isMoveSuccessful = await MediaLibrary.addAssetsToAlbumAsync(
+        selectedPhotos,
+        album,
+        false
+      );
+      if (!isMoveSuccessful) {
+        throw new Error("Some error occured");
+      }
+
+      return true;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
+      await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
+      await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
+
+      setSelectedPhotos([]);
+      setIsVisible(false);
+    },
+    onError: () => {
+      Alert.alert("Error", "Some error occured");
+    },
+  });
   return (
     <Modal animationType="slide" transparent visible={isVisible}>
       <View style={tw`flex-1 bg-gray-100/70`}>
@@ -29,6 +65,8 @@ const ChooseAlbumModal = () => {
                 <Pressable
                   key={album.id}
                   style={tw`p-2 rounded-full bg-gray-50 flex-row justify-between items-center rounded-full`}
+                  onPress={() => handleMoveSelectedImagesToAlbum(album)}
+                  disabled={isPending}
                 >
                   <Text style={tw`font-medium`}>{album.title}</Text>
                   <Text>{album.assetCount}</Text>
@@ -37,6 +75,10 @@ const ChooseAlbumModal = () => {
             })}
             <Pressable
               style={tw`p-2 rounded-full bg-gray-50 flex-row justify-between items-center rounded-full`}
+              onPress={() => {
+                setIsVisible(false);
+                showCreateAlbumModal(true);
+              }}
             >
               <Text style={tw`text-blue-600 font-medium`}>
                 Create new album
