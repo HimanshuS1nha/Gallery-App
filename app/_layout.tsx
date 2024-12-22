@@ -15,7 +15,7 @@ import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
 const StackNavigator = () => {
   const queryClient = useQueryClient();
   const { setSelectedPhoto, selectedPhoto } = usePhotos();
-  const { albumPhotos } = useAlbums();
+  const { albumPhotos, setSelectedAlbum, setAlbumPhotos } = useAlbums();
   const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
   const setIsVisible = useChooseAlbumModal((state) => state.setIsVisible);
 
@@ -169,6 +169,8 @@ const StackNavigator = () => {
                   if (selectedPhotos.length > 0) {
                     setSelectedPhotos([]);
                   } else {
+                    setSelectedAlbum(null);
+                    setAlbumPhotos([]);
                     router.back();
                   }
                 }}

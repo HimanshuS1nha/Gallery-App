@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, Text } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import tw from "twrnc";
 import { useQuery } from "@tanstack/react-query";
@@ -17,19 +17,26 @@ const AlbumPhotos = () => {
   const { selectedAlbum, setAlbumPhotos, albumPhotos } = useAlbums();
   const selectedPhotos = useSelectedItems((state) => state.selectedPhotos);
 
-  const { data, isLoading } = useQuery({
+  const [endCursor, setEndCursor] = useState<string>();
+
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["get-album-photos"],
     queryFn: async () => {
+      if (!selectedAlbum) {
+        return null;
+      }
       const albumAssets = await MediaLibrary.getAssetsAsync({
-        album: selectedAlbum!,
+        album: selectedAlbum,
+        after: endCursor,
       });
-      return albumAssets.assets;
+      return { assets: albumAssets.assets, endCursor: albumAssets.endCursor };
     },
   });
 
   useEffect(() => {
-    if (data) {
-      setAlbumPhotos(data);
+    if (data && data.assets.length !== albumPhotos.length) {
+      setAlbumPhotos([...albumPhotos, ...data.assets]);
+      setEndCursor(data.endCursor);
     }
   }, [data]);
   return (
@@ -59,6 +66,7 @@ const AlbumPhotos = () => {
           numColumns={4}
           estimatedItemSize={50}
           showsVerticalScrollIndicator={false}
+          onEndReached={refetch}
         />
       )}
     </View>
