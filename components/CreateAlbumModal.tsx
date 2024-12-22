@@ -7,10 +7,14 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { useCreateAlbumModal } from "@/hooks/useCreateAlbumModal";
 import { useSelectedItems } from "@/hooks/useSelectedItems";
+import { useAlbums } from "@/hooks/useAlbums";
+import { usePhotos } from "@/hooks/usePhotos";
 
 const CreateAlbumModal = () => {
   const { isVisible, setIsVisible } = useCreateAlbumModal();
   const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
+  const setAlbumPhotos = useAlbums((state) => state.setAlbumPhotos);
+  const setPhotos = usePhotos((state) => state.setPhotos);
   const queryClient = useQueryClient();
 
   const [albumName, setAlbumName] = useState("");
@@ -39,6 +43,8 @@ const CreateAlbumModal = () => {
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
+      setPhotos([]);
+      setAlbumPhotos([]);
       setSelectedPhotos([]);
       setIsVisible(false);
     },

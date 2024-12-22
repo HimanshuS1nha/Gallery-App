@@ -6,12 +6,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
 
 import { useAlbums } from "@/hooks/useAlbums";
+import { usePhotos } from "@/hooks/usePhotos";
 import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
 import { useSelectedItems } from "@/hooks/useSelectedItems";
 import { useCreateAlbumModal } from "@/hooks/useCreateAlbumModal";
 
 const ChooseAlbumModal = () => {
-  const albums = useAlbums((state) => state.albums);
+  const { albums, setAlbumPhotos } = useAlbums();
+  const setPhotos = usePhotos((state) => state.setPhotos);
   const { isVisible, setIsVisible } = useChooseAlbumModal();
   const showCreateAlbumModal = useCreateAlbumModal(
     (state) => state.setIsVisible
@@ -38,6 +40,8 @@ const ChooseAlbumModal = () => {
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
+      setPhotos([]);
+      setAlbumPhotos([]);
       setSelectedPhotos([]);
       setIsVisible(false);
     },
