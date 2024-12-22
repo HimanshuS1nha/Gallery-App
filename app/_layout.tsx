@@ -46,7 +46,10 @@ const StackNavigator = () => {
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
+        await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
+        await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
         setPhotos([]);
+        setAlbumPhotos([]);
         router.dismissAll();
       },
       onError: () => {
@@ -90,6 +93,7 @@ const StackNavigator = () => {
       setPhotos([]);
       setAlbumPhotos([]);
       setSelectedPhotos([]);
+      router.back();
     },
     onError: () => {
       Alert.alert("Error", "Some error occured");

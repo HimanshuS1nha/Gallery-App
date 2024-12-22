@@ -4,6 +4,7 @@ import tw from "twrnc";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
+import { router } from "expo-router";
 
 import { useAlbums } from "@/hooks/useAlbums";
 import { usePhotos } from "@/hooks/usePhotos";
@@ -36,14 +37,16 @@ const ChooseAlbumModal = () => {
       return true;
     },
     onSuccess: async () => {
+      setPhotos([]);
+      setAlbumPhotos([]);
+      setSelectedPhotos([]);
+      
       await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
-      setPhotos([]);
-      setAlbumPhotos([]);
-      setSelectedPhotos([]);
       setIsVisible(false);
+      router.back();
     },
     onError: () => {
       Alert.alert("Error", "Some error occured");

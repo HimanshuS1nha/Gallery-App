@@ -5,6 +5,7 @@ import tw from "twrnc";
 import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
 import { FlashList } from "@shopify/flash-list";
+import { useIsFocused } from "@react-navigation/native";
 
 import PhotoPreview from "@/components/PhotoPreview";
 
@@ -16,6 +17,7 @@ import CreateAlbumModal from "@/components/CreateAlbumModal";
 const AlbumPhotos = () => {
   const { selectedAlbum, setAlbumPhotos, albumPhotos } = useAlbums();
   const selectedPhotos = useSelectedItems((state) => state.selectedPhotos);
+  const isFocused = useIsFocused();
 
   const [endCursor, setEndCursor] = useState<string>();
 
@@ -42,6 +44,12 @@ const AlbumPhotos = () => {
       setEndCursor(data.endCursor);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setEndCursor(undefined);
+    }
+  }, [isFocused]);
   return (
     <View style={tw`flex-1 bg-white`}>
       <Stack.Screen

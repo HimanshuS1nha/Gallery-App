@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
 import tw from "twrnc";
 import { FlashList } from "@shopify/flash-list";
+import { useIsFocused } from "@react-navigation/native";
 
 import PhotoPreview from "@/components/PhotoPreview";
 
@@ -11,6 +12,7 @@ import { usePhotos } from "@/hooks/usePhotos";
 
 const Photos = () => {
   const { photos, setPhotos } = usePhotos();
+  const isFocused = useIsFocused();
 
   const [endCursor, setEndCursor] = useState<string>();
 
@@ -34,6 +36,12 @@ const Photos = () => {
       setEndCursor(data.endCursor);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setEndCursor(undefined);
+    }
+  }, [isFocused]);
   return (
     <View style={tw`flex-1 bg-white`}>
       {isLoading ? (
