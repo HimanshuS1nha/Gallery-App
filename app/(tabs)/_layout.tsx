@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React from "react";
 import { Pressable, View, Alert } from "react-native";
 import { AntDesign, Feather, Ionicons, FontAwesome5 } from "@expo/vector-icons";
@@ -169,7 +169,9 @@ const TabsLayout = () => {
                     </Pressable>
                   </>
                 ) : (
-                  <Feather name="settings" size={23} />
+                  <Pressable onPress={() => router.push("/settings")}>
+                    <Feather name="settings" size={23} />
+                  </Pressable>
                 )}
               </View>
             );
@@ -217,7 +219,9 @@ const TabsLayout = () => {
                     </Pressable>
                   </>
                 ) : (
-                  <Feather name="settings" size={23} />
+                  <Pressable onPress={() => router.push("/settings")}>
+                    <Feather name="settings" size={23} />
+                  </Pressable>
                 )}
               </View>
             );

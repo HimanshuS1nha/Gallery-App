@@ -220,6 +220,15 @@ const StackNavigator = () => {
           },
         }}
       />
+
+      <Stack.Screen
+        name="(others)/settings"
+        options={{
+          title: "Settings",
+          statusBarBackgroundColor: "#fff",
+          statusBarStyle: "dark",
+        }}
+      />
     </Stack>
   );
 };
