@@ -14,7 +14,7 @@ import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
 
 const StackNavigator = () => {
   const queryClient = useQueryClient();
-  const { setSelectedPhoto, selectedPhoto } = usePhotos();
+  const { setSelectedPhoto, selectedPhoto, setPhotos } = usePhotos();
   const { albumPhotos, setSelectedAlbum, setAlbumPhotos } = useAlbums();
   const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
   const setIsVisible = useChooseAlbumModal((state) => state.setIsVisible);
@@ -40,6 +40,7 @@ const StackNavigator = () => {
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
+        setPhotos([]);
         router.dismissAll();
       },
       onError: () => {
@@ -80,7 +81,8 @@ const StackNavigator = () => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["get-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
-
+      setPhotos([]);
+      setAlbumPhotos([]);
       setSelectedPhotos([]);
     },
     onError: () => {

@@ -18,8 +18,8 @@ const TabsLayout = () => {
     selectedPhotos,
     setSelectedPhotos,
   } = useSelectedItems();
-  const photos = usePhotos((state) => state.photos);
-  const albums = useAlbums((state) => state.albums);
+  const { photos, setPhotos } = usePhotos();
+  const { albums, setAlbumPhotos } = useAlbums();
 
   const {
     mutate: handleDeleteSelectedPhotos,
@@ -56,6 +56,8 @@ const TabsLayout = () => {
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
+      setPhotos([]);
+      setAlbumPhotos([]);
       setSelectedPhotos([]);
       setSelectedAlbums([]);
     },
@@ -103,6 +105,8 @@ const TabsLayout = () => {
       await queryClient.invalidateQueries({ queryKey: ["get-album-photos"] });
       await queryClient.invalidateQueries({ queryKey: ["get-albums"] });
 
+      setPhotos([]);
+      setAlbumPhotos([]);
       setSelectedPhotos([]);
       setSelectedAlbums([]);
     },
