@@ -1,4 +1,11 @@
-import { View, Text, Image, ActivityIndicator, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ActivityIndicator,
+  Pressable,
+  Alert,
+} from "react-native";
 import React, { useCallback } from "react";
 import tw from "twrnc";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +20,7 @@ const AlbumPreview = ({ album }: { album: MediaLibrary.Album }) => {
   const setSelectedAlbum = useAlbums((state) => state.setSelectedAlbum);
   const { selectedAlbums, setSelectedAlbums } = useSelectedItems();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: [`get-album-image-${album.id}`],
     queryFn: async () => {
       const albumAssets = await MediaLibrary.getAssetsAsync({
@@ -23,6 +30,9 @@ const AlbumPreview = ({ album }: { album: MediaLibrary.Album }) => {
       return albumAssets.assets[0].uri;
     },
   });
+  if (error) {
+    Alert.alert("Error", "Some error occured");
+  }
 
   const checkIfAlbumIsSelected = useCallback(() => {
     let isAlbumSelected = false;

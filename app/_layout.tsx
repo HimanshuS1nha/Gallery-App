@@ -11,13 +11,19 @@ import { usePhotos } from "@/hooks/usePhotos";
 import { useAlbums } from "@/hooks/useAlbums";
 import { useSelectedItems } from "@/hooks/useSelectedItems";
 import { useChooseAlbumModal } from "@/hooks/useChooseAlbumModal";
+import { usePhotoInfoModal } from "@/hooks/usePhotoInfoModal";
 
 const StackNavigator = () => {
   const queryClient = useQueryClient();
   const { setSelectedPhoto, selectedPhoto, setPhotos } = usePhotos();
   const { albumPhotos, setSelectedAlbum, setAlbumPhotos } = useAlbums();
   const { selectedPhotos, setSelectedPhotos } = useSelectedItems();
-  const setIsVisible = useChooseAlbumModal((state) => state.setIsVisible);
+  const setIsChooseAlbumModalVisible = useChooseAlbumModal(
+    (state) => state.setIsVisible
+  );
+  const setIsPhotoInfoModalVisible = usePhotoInfoModal(
+    (state) => state.setIsVisible
+  );
 
   const { mutate: handleDeletePhoto, isPending: deletePhotoPending } =
     useMutation({
@@ -151,7 +157,13 @@ const StackNavigator = () => {
                 >
                   <FontAwesome5 name="trash" size={20} color="white" />
                 </Pressable>
-                <FontAwesome5 name="info-circle" size={20} color="white" />
+                <Pressable
+                  onPress={() => {
+                    setIsPhotoInfoModalVisible(true);
+                  }}
+                >
+                  <FontAwesome5 name="info-circle" size={20} color="white" />
+                </Pressable>
               </View>
             );
           },
@@ -187,7 +199,9 @@ const StackNavigator = () => {
               <View style={tw`mr-3 flex-row gap-x-6 items-center`}>
                 {selectedPhotos.length > 0 && (
                   <>
-                    <Pressable onPress={() => setIsVisible(true)}>
+                    <Pressable
+                      onPress={() => setIsChooseAlbumModalVisible(true)}
+                    >
                       <Octicons name="arrow-switch" size={23} color="black" />
                     </Pressable>
                     <Pressable

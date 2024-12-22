@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, Alert } from "react-native";
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
@@ -14,13 +14,16 @@ const Albums = () => {
 
   const filteredAlbums = albums.filter((album) => album.assetCount > 0);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["get-albums"],
     queryFn: async () => {
       const albums = await MediaLibrary.getAlbumsAsync();
       return albums;
     },
   });
+  if (error) {
+    Alert.alert("Error", "Some error occured");
+  }
 
   useEffect(() => {
     if (data) {

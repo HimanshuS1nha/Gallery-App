@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as MediaLibrary from "expo-media-library";
@@ -14,7 +14,7 @@ const Photos = () => {
 
   const [endCursor, setEndCursor] = useState<string>();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["get-photos"],
     queryFn: async () => {
       const albumAssets = await MediaLibrary.getAssetsAsync({
@@ -24,6 +24,9 @@ const Photos = () => {
       return { assets: albumAssets.assets, endCursor: albumAssets.endCursor };
     },
   });
+  if (error) {
+    Alert.alert("Error", "Some error occured");
+  }
 
   useEffect(() => {
     if (data && data.assets.length !== photos.length) {

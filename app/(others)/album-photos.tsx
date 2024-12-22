@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import tw from "twrnc";
@@ -19,7 +19,7 @@ const AlbumPhotos = () => {
 
   const [endCursor, setEndCursor] = useState<string>();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["get-album-photos"],
     queryFn: async () => {
       if (!selectedAlbum) {
@@ -32,6 +32,9 @@ const AlbumPhotos = () => {
       return { assets: albumAssets.assets, endCursor: albumAssets.endCursor };
     },
   });
+  if (error) {
+    Alert.alert("Error", "Some error occured");
+  }
 
   useEffect(() => {
     if (data && data.assets.length !== albumPhotos.length) {
